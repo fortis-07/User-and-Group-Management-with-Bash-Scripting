@@ -7,10 +7,10 @@ if [ $# -ne 1 ]; then
 fi
 FILENAME=$1
 
-mkdir -p /var/secure
-PASSFILE="/var/secure/user_passwords.txt"
 # Ensure proper permissions for password file
 # Create directories for logs and password storage if they don't exist
+mkdir -p /var/secure
+PASSFILE="/var/secure/user_passwords.txt"
 touch $PASSFILE
 chmod 600 $PASSFILE
 mkdir -p /var/log
@@ -42,10 +42,16 @@ while IFS=';' read -r username groups; do
         echo "User $username added to group $group" | tee -a $LOGFILE
     done
 
-# Function to generate random passwords
+#Function to generate random passwords
+#The chpasswd command reads a list of user name and password pairs from standard input and updates the system password file
     password=$(openssl rand -base64 12)
     echo "$username:$password" | chpasswd
     echo "Password set for user $username" | tee -a $LOGFILE
+    
+    #Store the password securely
+    #The password is stored in the /var/secure/user_passwords.txt file
+    #The file is created if it does not exist
+    #The file permissions are set to 600
     echo "$username,$password" >> $PASSFILE
 done < "$FILENAME"
 echo "User management creation completed at $(date)" | tee -a $LOGFILE
