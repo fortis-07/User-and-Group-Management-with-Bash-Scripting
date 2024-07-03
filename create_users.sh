@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if running as root
+if [[ $UID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
 # Check if the input file is provided
 if [ $# -ne 1 ]; then
     echo "Use: $0 <filename>"
